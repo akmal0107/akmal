@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPDHANENDRA29</title>
+    
+    <!-- Tailwind CSS for basic layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- fullPage.js for full-screen scrolling sections -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.1.2/fullpage.min.css" />
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Google Fonts: VT323 for retro headers, Poppins for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Retro Theme & Custom Styles --- */
+        :root {
+            --bg-color: #fdf6e3; /* Softer, aged paper color */
+            --text-color: #073642; /* Dark, muted blue-green */
+            --primary-color: #d33682; /* Magenta */
+            --secondary-color: #268bd2; /* Blue */
+            --border-color: #073642;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden; /* For fullPage.js */
+            cursor: none; /* Hide default cursor */
+            /* Retro scanline effect */
+            position: relative;
+        }
+        
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent,
+                transparent 2px,
+                rgba(7, 54, 66, 0.05) 2px,
+                rgba(7, 54, 66, 0.05) 3px
+            );
+            pointer-events: none;
+            z-index: 99999;
+            opacity: 0.7;
+        }
+
+        /* --- Custom Cursor --- */
+        .cursor-ring {
+            position: fixed;
+            width: 25px;
+            height: 25px;
+            border: 2px solid var(--primary-color);
+            left: 0;
+            top: 0;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-width 0.3s, opacity 0.3s;
+            z-index: 9999;
+        }
+        .cursor-dot {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background-color: var(--text-color);
+            border-radius: 50%;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        .cursor-ring.grow {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(211, 54, 130, 0.2);
+            border-width: 1px;
+            opacity: 0.5;
+        }
+
+        /* --- Header Styling --- */
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 70;
+            background-color: rgba(253, 246, 227, 0.8); /* Semi-transparent bg-color */
+            backdrop-filter: blur(5px);
+            border-bottom: 3px solid var(--border-color);
+        }
+
+        /* --- Custom Fonts --- */
+        .font-retro {
+            font-family: 'VT323', monospace;
+        }
+
+        /* --- Section Styling --- */
+        .section {
+            text-align: center;
+        }
+        .hero-title {
+            font-size: clamp(3.5rem, 12vw, 8rem); /* Responsive font size */
+            line-height: 1;
+            color: var(--primary-color);
+            text-shadow: 4px 4px 0 var(--text-color);
+        }
+        .section-title {
+             font-size: clamp(3rem, 10vw, 5rem);
+             color: var(--secondary-color);
+             text-shadow: 3px 3px 0 var(--text-color);
+        }
+
+        /* --- Card Styling (Retro Hover Effect) --- */
+        .card {
+            background: var(--bg-color);
+            border: 3px solid var(--border-color);
+            padding: 1.5rem;
+            box-shadow: 8px 8px 0px var(--border-color);
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            text-align: left;
+        }
+        .card:hover {
+            transform: translate(-8px, -8px);
+            box-shadow: 16px 16px 0px var(--secondary-color);
+        }
+        .card h3 {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .tugas-card {
+            text-align: center;
+        }
+        .tugas-card i {
+            transition: transform 0.2s ease-out;
+        }
+        .tugas-card:hover i {
+            transform: scale(1.1) rotate(-8deg);
+            color: var(--primary-color) !important;
+        }
+
+        /* --- Music Control --- */
+        #music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            width: 50px;
+            height: 50px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            border-radius: 50%;
+            border: 3px solid var(--border-color);
+            box-shadow: 4px 4px 0px var(--border-color);
+            transition: all 0.2s ease-out;
+        }
+        #music-control:hover {
+            transform: translate(-4px, -4px) scale(1.1);
+            box-shadow: 8px 8px 0px var(--primary-color);
+        }
+
+        /* --- GSAP Animation Helper --- */
+        .g-hidden {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-ring"></div>
+    <div class="cursor-dot"></div>
+
+    <!-- Header -->
+    <header id="header" class="p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <!-- Logo UNWAHAS -->
+                <img src="c:\Users\huda0\OneDrive\Pictures\330px-Unwahas.png" alt="Logo UNWAHAS" class="h-10 interactive-element">
+                <div>
+                    <!-- GANTI DENGAN NAMAMU -->
+                    <h1 class="text-lg font-bold">Dhanendra Hafizul Akmal</h1>
+                    <p class="text-xs font-semibold">TI - UNWAHAS</p>
+                </div>
+            </div>
+            <div class="font-retro text-xl">
+                <p>SEMARANG, 2025</p>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Background Music -->
+    <audio id="background-music" loop>
+        <!-- Ganti dengan URL musik (Chiptune 8-bit sangat cocok untuk tema retro) -->
+        <source src="c:\Users\huda0\Downloads\DJ TABOLA BALE X CALON MANTU IDAMAN SLOW VIRAL TIKTOK FULL SONG MAMAN FVNDY 2025.mp3" type="audio/mpeg">
+    </audio>
+    <button id="music-control" class="flex justify-center items-center interactive-element">
+        <i id="music-icon" class="fas fa-play"></i>
+    </button>
+
+    <!-- fullPage.js Container -->
+    <div id="fullpage">
+        <!-- Section 1: Hero/Landing -->
+        <div class="section flex justify-center items-center">
+            <div class="text-center px-4">
+                <h1 class="hero-title font-retro g-hidden">WP DHANENDRA</h1>
+                <p class="text-xl md:text-2xl mt-4 g-hidden font-semibold">25103041075 TEKNIK INFORMATIKA</p>
+            </div>
+        </div>
+
+        <!-- Section 2: Ringkasan Tugas -->
+        <div class="section flex justify-center items-center">
+            <div class="container mx-auto px-5">
+                <h2 class="section-title font-retro mb-12 g-hidden">DESKRIPSI</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="card g-hidden interactive-element">
+                        <h3 class="font-bold text-xl">NAMA LENGKAP</h3>
+                        <p>DHANENDRA HAFIZUL AKMAL</p>
+                    </div>
+                    <div class="card g-hidden interactive-element">
+                        <h3 class="font-bold text-xl">ALAMAT</h3>
+                        <p>DESA PEGANDON,KABUPATEN KENDAL</p>
+                    </div>
+                    <div class="card g-hidden interactive-element">
+                        <h3 class="font-bold text-xl">PENDIDIKAN</h3>
+                        <p>SDIT MUHAMMADIYAH PEGANDON,
+                            SMPN 1 PEGANDON,
+                            SMAN 1 PEGANDON
+                        </p>
+                    </div>
+                    <div class="card g-hidden interactive-element">
+                        <h3 class="font-bold text-xl">CITA-CITA</h3>
+                        <p>HIDUP DENGAN TENANG</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 3: Lihat File Tugas -->
+        <div class="section flex justify-center items-center">
+            <div class="container mx-auto px-5">
+                <h2 class="section-title font-retro mb-12 g-hidden">DAFTAR TUGAS</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <!-- GANTI href DENGAN LINK FILE TUGASMU -->
+                    <a href="https://dhanendraaa.my.canva.site/blog-dhanendra-desain-retro-dan-ringkasan-sistem-bilangan" target="_blank" class="card tugas-card g-hidden interactive-element">
+                        <i class="fas fa-file-pdf text-7xl text-gray-700"></i>
+                        <span class="font-semibold text-lg mt-4 block">Tugas Kalkulus</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    
+    <!-- fullPage.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.1.2/fullpage.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // --- Custom Cursor Logic ---
+            const cursorRing = document.querySelector('.cursor-ring');
+            const cursorDot = document.querySelector('.cursor-dot');
+            const interactiveElements = document.querySelectorAll('.interactive-element');
+
+            window.addEventListener('mousemove', e => {
+                gsap.to(cursorRing, { duration: 0.5, x: e.clientX, y: e.clientY, ease: 'power2.out' });
+                gsap.to(cursorDot, { duration: 0.2, x: e.clientX, y: e.clientY });
+            });
+
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => cursorRing.classList.add('grow'));
+                el.addEventListener('mouseleave', () => cursorRing.classList.remove('grow'));
+            });
+
+            // --- Music Control Logic ---
+            const musicControl = document.getElementById('music-control');
+            const musicIcon = document.getElementById('music-icon');
+            const backgroundMusic = document.getElementById('background-music');
+            let isPlaying = false;
+
+            musicControl.addEventListener('click', () => {
+                if (isPlaying) {
+                    backgroundMusic.pause();
+                    musicIcon.classList.replace('fa-pause', 'fa-play');
+                } else {
+                    // Play must be initiated by user interaction
+                    backgroundMusic.play().catch(e => console.error("Autoplay failed:", e));
+                    musicIcon.classList.replace('fa-play', 'fa-pause');
+                }
+                isPlaying = !isPlaying;
+            });
+
+            // --- fullPage.js & GSAP Initialization ---
+            new fullpage('#fullpage', {
+                licenseKey: 'gplv3-license',
+                autoScrolling: true,
+                navigation: false, // Navigation dots are off for a cleaner retro look
+                anchors: ['home', 'ringkasan', 'tugas'],
+
+                afterLoad: (origin, destination, direction) => {
+                    const section = destination.item;
+                    const elementsToAnimate = section.querySelectorAll('.g-hidden');
+                    gsap.to(elementsToAnimate, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        stagger: 0.15,
+                        ease: 'power3.out',
+                        delay: 0.2
+                    });
+                },
+
+                onLeave: (origin, destination, direction) => {
+                    const section = origin.item;
+                    const elementsToAnimate = section.querySelectorAll('.g-hidden');
+                    gsap.to(elementsToAnimate, {
+                        opacity: 0,
+                        y: 40,
+                        duration: 0.4,
+                        ease: 'power3.in'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
